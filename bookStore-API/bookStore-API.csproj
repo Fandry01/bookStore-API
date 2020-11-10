@@ -8,7 +8,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>C:\Users\fbaff\source\repos\bookStore-API\bookStore-API\bookStore-API.xml</DocumentationFile>
-    <NoWarn>1701;1702;1591</NoWarn>
+    <NoWarn>1701;1702;1591;1573;1572</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

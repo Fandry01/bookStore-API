@@ -36,6 +36,18 @@
             <param name="author"></param>
             <returns></returns>
         </member>
+        <member name="M:bookStore_API.Controllers.AuthorsController.Delete(System.Int32)">
+            <summary>
+            Update Author
+            </summary>
+            <param name="author"></param>
+            <returns></returns>
+        </member>
+        <member name="T:bookStore_API.Controllers.BooksController">
+            <summary>
+            Interacts with the books Table
+            </summary>
+        </member>
         <member name="T:bookStore_API.Controllers.HomeController">
             <summary>
             this is a test api controller
