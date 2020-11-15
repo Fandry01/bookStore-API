@@ -6,6 +6,7 @@ using AutoMapper;
 using bookStore_API.Contracts;
 using bookStore_API.Data;
 using bookStore_API.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,11 +16,12 @@ namespace bookStore_API.Controllers
 /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BooksController : ControllerBase
     {
         private readonly IBookRepository _bookRepository;
         private readonly IloggerService _logger;
-        private readonly IMapper _mapper; 
+        private readonly IMapper _mapper;
         public BooksController(IBookRepository bookRepository,
             IloggerService logger, IMapper mapper)
         {
@@ -88,6 +90,7 @@ namespace bookStore_API.Controllers
         /// <param name="bookDTO"></param>
         /// <returns>book object</returns>
         [HttpGet]
+        [Authorize(Roles = "Administrator")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -131,10 +134,11 @@ namespace bookStore_API.Controllers
         /// <param name="bookDTO"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Update(int id [FromBody] BookUpdateDTO bookDTO)
+        public async Task<IActionResult> Update(int id, [FromBody] BookUpdateDTO bookDTO)
         {
             var location = GetControllerActionNames();
             try
@@ -146,7 +150,7 @@ namespace bookStore_API.Controllers
                     return BadRequest();
 
                 }
-                var isExists = await _bookRepository.isExists(id); 
+                var isExists = await _bookRepository.isExists(id);
                 if (!isExists)
                 {
                     _logger.LogWarn($"{location}: failed to retrieve data  ");
@@ -180,16 +184,17 @@ namespace bookStore_API.Controllers
         /// <param name="bookDTO"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete(int id [FromBody] BookUpdateDTO bookDTO)
+        public async Task<IActionResult> Delete(int id)
         {
             var location = GetControllerActionNames();
             try
             {
                 _logger.LogInfo($"{location}: Delete  Attempted on record with id : {id} ");
-                if (id < 1 )
+                if (id < 1)
                 {
                     _logger.LogWarn($"{location}: Delete failed with bad data : {id} ");
                     return BadRequest();
@@ -206,7 +211,7 @@ namespace bookStore_API.Controllers
                     _logger.LogWarn($"{location} Data was incomplete");
                     return BadRequest(ModelState);
                 }
-                var book = _mapper.Map<Book>(bookDTO);
+                var book = await _bookRepository.FindById(id);
                 var isSucces = await _bookRepository.Delete(book);
                 if (!isSucces)
                 {
@@ -225,17 +230,17 @@ namespace bookStore_API.Controllers
 
 
         private string GetControllerActionNames()
-            {
+        {
             var controller = ControllerContext.ActionDescriptor.ControllerName;
             var action = ControllerContext.ActionDescriptor.ActionName;
 
             return $"{controller} -{action}";
-            }
-            private ObjectResult InternalError(string message)
-            {
-                _logger.LogError(message);
-                return StatusCode(500, "Something went wrong. Please contact the administrator");
-            }
-        
+        }
+        private ObjectResult InternalError(string message)
+        {
+            _logger.LogError(message);
+            return StatusCode(500, "Something went wrong. Please contact the administrator");
+        }
+    
     }
 }

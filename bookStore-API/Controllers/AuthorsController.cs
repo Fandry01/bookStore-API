@@ -7,6 +7,7 @@ using bookStore_API.Contracts;
 using bookStore_API.Data;
 using bookStore_API.DTOs;
 using bookStore_API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -18,6 +19,7 @@ namespace bookStore_API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public class AuthorsController : ControllerBase
     {
@@ -36,6 +38,7 @@ namespace bookStore_API.Controllers
         /// </summary>
         /// <returns>List of Authors</returns>
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAuthors()
@@ -93,7 +96,7 @@ namespace bookStore_API.Controllers
         /// <param name="author"></param>
         /// <returns></returns>
         [HttpPost]
-
+        [Authorize(Roles ="Administrator")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -133,7 +136,8 @@ namespace bookStore_API.Controllers
         /// </summary>
         /// <param name="author"></param>
         /// <returns></returns>
-        [HttpPut("{id}")]  
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -178,6 +182,7 @@ namespace bookStore_API.Controllers
         /// <param name="author"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
